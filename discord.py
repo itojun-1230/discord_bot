@@ -46,9 +46,9 @@ def createReaction(botToken, channelId, messageId, reaction):
         "Authorization": f"Bot {botToken}",
         "Content-Type": "application/json",
     }
-    r = requests.put(url, headers=headers)
-    print(r.json())
-    return 
+    requests.put(url, headers=headers)
+    print("done")
+    
 
 
 def get_time():
