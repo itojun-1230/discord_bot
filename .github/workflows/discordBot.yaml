@@ -19,4 +19,4 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Run Python
-        run: python discord.py
+        run: python discord.py ${{secrets.DISCORD_BOT_TOKEN}} ${{secrets.DISCORD_CHANNEL_ID}}
