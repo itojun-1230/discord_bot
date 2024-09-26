@@ -11,7 +11,6 @@ def main():
     messageId = askAttendance(botToken, channelId)
     createReaction(botToken, channelId, messageId, "⭕")
     createReaction(botToken, channelId, messageId, "❌")
-    sleep(1)
     print("done")
 
 def askAttendance(botToken, channelId):
@@ -47,7 +46,9 @@ def createReaction(botToken, channelId, messageId, reaction):
         "Authorization": f"Bot {botToken}",
         "Content-Type": "application/json",
     }
-    requests.put(url, headers=headers)
+    r = requests.put(url, headers=headers)
+    print(r.json())
+    return 
 
 
 def get_time():
