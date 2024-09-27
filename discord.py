@@ -1,6 +1,7 @@
 from asyncio import sleep
 import sys
 import datetime
+import time
 import requests
 
 def main():
@@ -11,7 +12,6 @@ def main():
     messageId = askAttendance(botToken, channelId)
     createReaction(botToken, channelId, messageId, "⭕")
     createReaction(botToken, channelId, messageId, "❌")
-    print("done")
 
 def askAttendance(botToken, channelId):
     url = f"https://discord.com/api/v10/channels/{channelId}/messages"
@@ -47,7 +47,7 @@ def createReaction(botToken, channelId, messageId, reaction):
         "Content-Type": "application/json",
     }
     requests.put(url, headers=headers)
-    print("done")
+    time.sleep(1)
     
 
 
