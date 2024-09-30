@@ -26,7 +26,7 @@ def askAttendance(botToken, channelId):
         "Authorization": f"Bot {botToken}",
         "Content-Type": "application/json",
     }
-    ruleId = 1288860377634963558
+    roleId = 1288860377634963558
     title = f"{get_time()}の活動の参加可否"
     payload = {
         "embeds": [
