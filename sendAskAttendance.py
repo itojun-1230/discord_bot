@@ -1,9 +1,14 @@
 import datetime
+import sys
 import time
 import requests
 
+args = sys.argv
+botToken = args[1]
+channelId = args[2]
+membersGasURL = args[3]
 
-def main(botToken, channelId, messageGASURL):
+def main():
 
     messageResult = askAttendance(botToken, channelId)
     messageId = messageResult[0]

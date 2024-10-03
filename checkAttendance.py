@@ -1,6 +1,13 @@
+import sys
 import requests
 
-def main(botToken, channelId, messageGASURL, membersGasURL):
+args = sys.argv
+botToken = args[1]
+channelId = args[2]
+messageGASURL = args[3]
+membersGasURL = args[4]
+
+def main():
   messageData = getMessageData(messageGASURL)
   messageId = messageData["messageId"]
 

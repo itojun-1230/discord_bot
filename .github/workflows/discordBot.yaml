@@ -1,10 +1,12 @@
 name: Discord Bot
 
 on:
-  repository_dispatch
-
+  repository_dispatch:
+    types:
+      - sendAttendance
+      - checkAttendance
 jobs:
-  hello-test:
+  sendAttendance:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -16,4 +18,17 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Run Python
-        run: python main.py ${{ github.event.action }} ${{ secrets.DISCORD_BOT_TOKEN }} ${{ secrets.DISCORD_CHANNEL_ID }} ${{ secrets.MESSAGE_GASURL }} ${{ secrets.MEMBERS_GASURL}}
+        run: python sendAskAttendance.py ${{ secrets.DISCORD_BOT_TOKEN }} ${{ secrets.DISCORD_CHANNEL_ID }} ${{ secrets.MESSAGE_GASURL }}
+  checkAttendance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+          architecture: 'x64'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run Python
+        run: python checkAttendance.py ${{ secrets.DISCORD_BOT_TOKEN }} ${{ secrets.DISCORD_CHANNEL_ID }} ${{ secrets.MESSAGE_GASURL }} ${{ secrets.MEMBERS_GASURL}}
