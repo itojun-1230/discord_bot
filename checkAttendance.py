@@ -1,25 +1,23 @@
-import sys
 import requests
 
-args = sys.argv
-botToken = args[1]
-channelId = args[2]
-gasURL = f"https://script.google.com/macros/s/AKfycbwM8MkxtgbiBhKnlge2HmV1TodCc6woucUJ_wJXaiLcG-YNsgEt6NtYhYkcaH3q_xl1/exec"
-
-def main():
-  messageData = getMessageData()
+def main(botToken, channelId, messageGASURL, membersGasURL):
+  messageData = getMessageData(messageGASURL)
   messageId = messageData["messageId"]
 
   yes_users = getReactions(botToken, channelId, messageId, "⭕")
   no_users = getReactions(botToken, channelId, messageId, "❌")
 
-  print(yes_users)
-  print(no_users)
+  members = getMembers(membersGasURL)
+  for member in members:
+    if member["discordId"] in yes_users or member["discordId"] in no_users:
+      member["attendance"] = True
+    else:
+      member["attendance"] = False
+  
+  sendRemindAttendance(botToken, channelId, members)
 
-
-
-def getMessageData():
-  r = requests.get(gasURL)
+def getMessageData(messageGASURL):
+  r = requests.get(messageGASURL)
   return r.json()
 
 def getReactions(botToken, channelId, messageId, reaction):
@@ -32,7 +30,32 @@ def getReactions(botToken, channelId, messageId, reaction):
 
   users = []
   for user in r.json():
-    users.append(user["username"])
+    users.append(user["id"])
   return users
 
-main()
+def getMembers(membersGasURL):
+  r = requests.get(membersGasURL)
+  return r.json()
+
+def sendRemindAttendance(botToken, channelId, members):
+  message = (
+    "お疲れ様です！\n"
+    "以下の方は今日の活動の参加可否を教えてください！\n"
+    "\n"
+  )
+  
+  membersMessage = []
+  for member in members:
+    if not member["attendance"]:
+      membersMessage.append(f"{member['name']}(<@{member['discordId']}>)")
+  message += "、".join(membersMessage)
+        
+  url = f"https://discord.com/api/v10/channels/{channelId}/messages"
+  headers = {
+    "Authorization": f"Bot {botToken}",
+    "Content-Type": "application/json",
+  }
+  payload = {
+    "content": message,
+  }
+  requests.post(url, headers=headers, json=payload)

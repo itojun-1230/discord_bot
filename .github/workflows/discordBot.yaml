@@ -1,10 +1,7 @@
 name: Discord Bot
 
 on:
-  push:
-    branches: 
-      - main
-  workflow_dispatch:
+  repository_dispatch
 
 jobs:
   hello-test:
@@ -19,4 +16,4 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Run Python
-        run: python checkAttendance.py ${{secrets.DISCORD_BOT_TOKEN}} ${{secrets.DISCORD_CHANNEL_ID}}
+        run: python main.py ${{ github.event.action }} ${{ secrets.DISCORD_BOT_TOKEN }} ${{ secrets.DISCORD_CHANNEL_ID }} ${{ secrets.MESSAGE_GASURL }} ${{ secrets.MEMBERS_GASURL}}
