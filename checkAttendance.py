@@ -8,23 +8,25 @@ messageGASURL = args[3]
 membersGasURL = args[4]
 
 def main():
-  messageData = getMessageData(messageGASURL)
-  messageId = messageData["messageId"]
+  messageData = getMessageData(messageGASURL)["messageData"]
+  for message in messageData:
+    print(message)
+    messageId = message["messageId"]
 
-  yes_users = getReactions(botToken, channelId, messageId, "⭕")
-  no_users = getReactions(botToken, channelId, messageId, "❌")
+    yes_users = getReactions(botToken, channelId, messageId, "⭕")
+    no_users = getReactions(botToken, channelId, messageId, "❌")
 
-  members = getMembers(membersGasURL)
-  for member in members:
-    if member["discordId"] in yes_users or member["discordId"] in no_users:
-      member["attendance"] = True
-    else:
-      member["attendance"] = False
-  
-  sendRemindAttendance(botToken, channelId, members)
+    members = getMembers(membersGasURL)
+    for member in members:
+      if member["discordId"] in yes_users or member["discordId"] in no_users:
+        member["attendance"] = True
+      else:
+        member["attendance"] = False
+    
+    sendRemindAttendance(botToken, channelId, members, message["title"])
 
 def getMessageData(messageGASURL):
-  r = requests.get(messageGASURL)
+  r = requests.get(f"{messageGASURL}?type=message")
   return r.json()
 
 def getReactions(botToken, channelId, messageId, reaction):
@@ -44,10 +46,10 @@ def getMembers(membersGasURL):
   r = requests.get(membersGasURL)
   return r.json()
 
-def sendRemindAttendance(botToken, channelId, members):
+def sendRemindAttendance(botToken, channelId, members, title):
   message = (
     "お疲れ様です！\n"
-    "以下の方は今日の活動の参加可否を教えてください！\n"
+    f"以下の方は今日の{title}の参加可否を教えてください！\n"
     "\n"
   )
   
@@ -65,4 +67,7 @@ def sendRemindAttendance(botToken, channelId, members):
   payload = {
     "content": message,
   }
+
   requests.post(url, headers=headers, json=payload)
+
+main()

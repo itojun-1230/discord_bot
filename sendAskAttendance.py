@@ -6,26 +6,27 @@ import requests
 args = sys.argv
 botToken = args[1]
 channelId = args[2]
-membersGasURL = args[3]
+messageGASURL = args[3]
+membersGasURL = args[4]
 
 def main():
+    nextEventNames = getEventNames(messageGASURL)["nextEventNames"]
+    for nextEventName in nextEventNames:
+        messageResult = askAttendance(botToken, channelId, nextEventName)
+        messageId = messageResult[0]
+        title = messageResult[1]
+        createReaction(botToken, channelId, messageId, "⭕")
+        createReaction(botToken, channelId, messageId, "❌")
+        postMessageId(messageId, title, messageGASURL)
 
-    messageResult = askAttendance(botToken, channelId)
-    messageId = messageResult[0]
-    title = messageResult[1]
-    createReaction(botToken, channelId, messageId, "⭕")
-    createReaction(botToken, channelId, messageId, "❌")
-
-    postMessageId(messageId, title, messageGASURL)
-
-def askAttendance(botToken, channelId):
+def askAttendance(botToken, channelId, nextEventName):
     url = f"https://discord.com/api/v10/channels/{channelId}/messages"
     headers = {
         "Authorization": f"Bot {botToken}",
         "Content-Type": "application/json",
     }
-    roleId = 1288860377634963558
-    title = f"{get_time()}の活動の参加可否"
+    roleId = 1159075455190695956
+    title = f"{nextEventName}({get_time()})"
     payload = {
         "embeds": [
             {
@@ -40,7 +41,7 @@ def askAttendance(botToken, channelId):
                 "color": 4371196,
             }
         ],
-        "content": f"<@&{roleId}> 明日のサークルの参加可否を教えてください！",
+        "content": f"<@&{roleId}> 「{nextEventName}({get_time()})」の参加可否を教えてください！",
     }
     r = requests.post(url, headers=headers, json=payload)
     print(r.json())
@@ -58,7 +59,13 @@ def createReaction(botToken, channelId, messageId, reaction):
 def postMessageId(messageId, title, messageGASURL):
     requests.post(messageGASURL, json={"messageId": messageId, "title": title})
 
+def getEventNames(messageGASURL):
+  r = requests.get(f"{messageGASURL}?type=event")
+  return r.json()
+
 def get_time():
     nextDay = datetime.datetime.now() + datetime.timedelta(days=1)
 
     return nextDay.strftime("%Y-%m-%d")
+
+main()
