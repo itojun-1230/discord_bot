@@ -2,8 +2,8 @@ name: Discord Bot
 
 on:
   schedule:
-    - cron: '0 19 * * *'
-    - cron: '0 16 * * *'
+    - cron: '0 10 * * *'
+    - cron: '0 7 * * *'
   repository_dispatch:
     types:
       - sendAttendance
@@ -11,7 +11,7 @@ on:
 
 jobs:
   sendAttendance:
-    if: github.event_name == 'schedule' && contains(github.event.schedule, '0 9')
+    if: contains(github.event.schedule, '0 10')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -26,7 +26,7 @@ jobs:
         run: python sendAskAttendance.py ${{ secrets.DISCORD_BOT_TOKEN }} ${{ secrets.DISCORD_CHANNEL_ID }} ${{ secrets.MESSAGE_GASURL }} ${{ secrets.MEMBERS_GASURL }}
 
   checkAttendance:
-    if: github.event_name == 'schedule' && contains(github.event.schedule, '0 17')
+    if: contains(github.event.schedule, '0 7')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
